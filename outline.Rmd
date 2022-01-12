@@ -1,0 +1,17 @@
+---
+title: "R Markdown Demo"
+author: "Jon Wheeler"
+date: "1/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Outline
+
+1. Introductions
+1. R and RStudio overview
+ 1. example report - what we are working toward
+1. 
