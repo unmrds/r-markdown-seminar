@@ -15,3 +15,13 @@ knitr::opts_chunk$set(echo = TRUE)
 1. R and RStudio overview
 1. Example report - what we are working toward
 1. R markdown intro example - syntax and code blocks, plots, formulas, etc.
+1. R workflow: download data, clean, tidy, analyze, visualize, report
+1. R workflow in Markdown - maybe this is the place to do md syntax
+
+## Resources
+
+<https://uw-madison-datascience.github.io/R-health-lesson/05-reports-rmarkdown/index.html>
+
+<https://swcarpentry.github.io/r-novice-gapminder/15-knitr-markdown/index.html>
+
+<https://researchguides.library.wisc.edu/R/markdown>
