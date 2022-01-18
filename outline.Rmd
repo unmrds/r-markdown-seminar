@@ -25,3 +25,5 @@ knitr::opts_chunk$set(echo = TRUE)
 <https://swcarpentry.github.io/r-novice-gapminder/15-knitr-markdown/index.html>
 
 <https://researchguides.library.wisc.edu/R/markdown>
+
+<https://bookdown.org/yihui/rmarkdown-cookbook/parameterized-reports.html>
