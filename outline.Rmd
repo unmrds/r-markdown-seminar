@@ -13,7 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 1. Introductions
 1. R and RStudio overview
-1. Example report - what we are working toward
+1. Example report - what we are working toward (YRBSS for NM, m/f and y/n
+for all indicators with plots)
 1. R markdown intro example - syntax and code blocks, plots, formulas, etc.
 1. R workflow: download data, clean, tidy, analyze, visualize, report
 1. R workflow in Markdown - maybe this is the place to do md syntax

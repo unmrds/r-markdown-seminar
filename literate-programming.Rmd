@@ -1,0 +1,39 @@
+---
+title: "Literate Programming"
+author: "Jon Wheeler"
+date: "1/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_packages, echo=TRUE, include=TRUE, message=FALSE}
+library(tidyverse)
+library(readxl)
+```
+
+## YRBSS
+
+About the data, what we want to do with this report.
+
+Load one year's worth of data as a standalone example.
+
+```{r read_data, echo=TRUE, include=TRUE, message=FALSE}
+yrbssNM2019 <- read_excel("./data/sadq_nm2019.xlsx")
+
+# Too many variables for this to look good in the nb
+# summary(yrbssNM2019)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r yrbssNMplot, echo=FALSE}
+plot(x = yrbssNM2019$bmi, y = yrbssNM2019$age)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
