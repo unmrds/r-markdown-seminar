@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load_packages, echo=TRUE, include=TRUE, message=FALSE}
 library(tidyverse)
 library(readxl)
+library(ggplot2)
+library(crosstable)
 ```
 
 ## YRBSS
@@ -23,8 +25,18 @@ Load one year's worth of data as a standalone example.
 ```{r read_data, echo=TRUE, include=TRUE, message=FALSE}
 yrbssNM2019 <- read_excel("./data/sadq_nm2019.xlsx")
 
+# OR csv
+# yrbssNM2019 <- read_csv("./data/sadq_nm2019.csv")
+
 # Too many variables for this to look good in the nb
 # summary(yrbssNM2019)
+```
+
+Get information about the imported data.
+
+```{r}
+# spec(yrbssNM2019) # doesn't work on Excel
+problems(yrbssNM2019)
 ```
 
 ## Including Plots
@@ -37,3 +49,18 @@ plot(x = yrbssNM2019$bmi, y = yrbssNM2019$age)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
+The data include many categorical variables - if we want to run certain 
+models we will have to fix this. But for now we can draw more informative plots
+and interrogate the dataset with the data as-is.
+
+```{r proportion_table}
+# note that sum of all values is 1
+prop.table(table(yrbssNM2019$grade, yrbssNM2019$sex))
+```
+
+Plot the above.
+
+```{r plot sex/grade}
+ggplot(yrbssNM2019, mapping = aes(x = grade, y = stweight)) + 
+         geom_point(aes(color = stheight, size = bmi))
+```
