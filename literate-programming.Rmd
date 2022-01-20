@@ -23,10 +23,7 @@ About the data, what we want to do with this report.
 Load one year's worth of data as a standalone example.
 
 ```{r read_data, echo=TRUE, include=TRUE, message=FALSE}
-yrbssNM2019 <- read_excel("./data/sadq_nm2019.xlsx")
-
-# OR csv
-# yrbssNM2019 <- read_csv("./data/sadq_nm2019.csv")
+yrbssNM2019 <- read_excel("./data/sadcqn_nm2019.xlsx")
 
 # Too many variables for this to look good in the nb
 # summary(yrbssNM2019)
