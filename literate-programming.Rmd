@@ -47,17 +47,80 @@ plot(x = yrbssNM2019$bmi, y = yrbssNM2019$age)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 The data include many categorical variables - if we want to run certain 
-models we will have to fix this. But for now we can draw more informative plots
-and interrogate the dataset with the data as-is.
+models we will have to coerce variable data types. But for now we can draw more informative plots and interrogate the data as-is.
 
 ```{r proportion_table}
 # note that sum of all values is 1
 prop.table(table(yrbssNM2019$grade, yrbssNM2019$sex))
 ```
 
-Plot the above.
+Draw a plot. Use additional variables for aesthetics. Adds more information
+to the plot. Alpha value helps us to see concentrations of data points.
 
-```{r plot sex/grade}
+```{r plot weight/grade}
 ggplot(yrbssNM2019, mapping = aes(x = grade, y = stweight)) + 
-         geom_point(aes(color = stheight, size = bmi))
+         geom_point(alpha = 0.05, aes(color = stheight, size = bmi))
+```
+Manipulate the data - we want to be able to produce some summary statistics similar
+to the YRBSS web page.
+
+Coerce some variables into factors.
+
+```{r sex_factor}
+
+# Documentation says A for female, B for male, but we have values of 1 and 2...
+# assume 1 == female, 2 == male
+yrbssNM2019$sex <- as.factor(yrbssNM2019$sex)
+levels(yrbssNM2019$sex)
+levels(yrbssNM2019$sex)[1] <- "female"
+levels(yrbssNM2019$sex)[2] <- "male"
+levels(yrbssNM2019$sex)
+plot(yrbssNM2019$sex) # omits NAs
+```
+```{r race4_factor}
+
+yrbssNM2019$race4 <- factor(yrbssNM2019$race4,
+                            labels = c("White", 
+                                       "Black or African American", 
+                                       "Hispanic/Latino", 
+                                       "All other races"))
+levels(yrbssNM2019$race4)
+plot(yrbssNM2019$race4)
+```
+```{r race7_factor}
+
+yrbssNM2019$race7 <- factor(yrbssNM2019$race7,
+                            labels = c("American Indian/Alaska Native", 
+                                       "Asian", 
+                                       "Black or African American", 
+                                       "Hispanic/Latino",
+                                       "Native Hawaiian/Other Pacific Islander",
+                                       "White",
+                                       "Multiple Races (Non-Hispanic)"))
+levels(yrbssNM2019$race7)
+plot(yrbssNM2019$race7)
+```
+```{r obesity_factor}
+
+yrbssNM2019$qnobese <- factor(yrbssNM2019$qnobese, labels = c("obese", "not obese"))
+levels(yrbssNM2019$qnobese)
+plot(yrbssNM2019$qnobese)
+```
+
+We are not going to coerce overweight indicator variable to a factor,
+since on review we can't determine what the factors are.
+
+The labels for the factors levels will now be used in tables and plots.
+
+```{r prop_table_mf_factors}
+# note that sum of all values is 1
+prop.table(table(yrbssNM2019$grade, yrbssNM2019$sex))
+```
+
+```{r plot race7/bmi/sex}
+ggplot(yrbssNM2019, mapping = aes(x = sex, y = bmi)) + 
+         geom_boxplot(aes(fill = qnobese)) + 
+         facet_wrap(~ race7) +
+         labs(x = "Sex", y = "Body Mass Index", 
+              title = "BMI by Race and Sex")
 ```
