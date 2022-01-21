@@ -173,12 +173,58 @@ The dataset used for this demonstration includes the dichotomized versions
 of the remaining questions. 
 
 These variables are set to 1 when the answer is in the response of interest,
-and 2 otherwise. Without knowing what constitutes a response of interest,
-the following results should all again be understood as examples of doing
-something with R and R Markdown, and not as meaningful analyses.
+and 2 otherwise. More detail is provided in the dataset documentation. 
 
+QN8 - QN11 address driving behaviors. For the remainder of this demo we
+will focus on those variables to derive the percentage of students who
+engage in specific behaviors such as not wearing a seat belt (QN8).
 
+QN8 - How often do you wear a seat belt when riding in a car driven by someone
+else. 
 
+Behaviors of interest, per documentation, are responses of "Never" or "Rarely" 
+to this question. We can arrive at the percentage of students who engaged in
+behaviors of interest:
+
+```{r seat_belt}
+# Using dplyr
+seat_belts <- yrbssNM2019 %>% 
+  select(qn8) %>% 
+  filter(!is.na(qn8)) %>% 
+  summarise(pct = sum(qn8 == 1)/n())
+
+seat_belts
+```
+We can break it down by different demographics.
+
+```{r}
+seat_belts_mf <- yrbssNM2019 %>% 
+  select(sex, qn8) %>% 
+  filter(!is.na(qn8), !is.na(sex)) %>% 
+  group_by(sex) %>% 
+  summarise(c = sum(!is.na(qn8)), 
+            c1 = sum(qn8 == 1),
+            c2 = sum(qn8 == 2),
+            pct = sum(qn8 == 1)/n())
+
+seat_belts_mf
+ggplot(seat_belts_mf, aes(x = sex, y = pct)) + geom_col()
+```
+
+Try a model. Given the nature of the data, I am not sure what we are
+predicting. Is it the likelihood that an individual will
+engage in behavior of interest based on sex?
+
+```{r}
+yrbssNM2019$qn8 <- as.factor(yrbssNM2019$qn8)
+yrbssNM2019$qn11 <- as.factor(yrbssNM2019$qn11)
+sbm <- glm(qn8 ~ sex, data = yrbssNM2019, family = "binomial")
+summary(sbm)
+round(cbind(exp(coef(sbm)),
+            exp(confint(sbm))), 3)
+```
+
+Do we understand this as males are ~34% less likely to wear a seat belt?
 
 
 
