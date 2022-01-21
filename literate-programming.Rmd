@@ -106,9 +106,16 @@ yrbssNM2019$qnobese <- factor(yrbssNM2019$qnobese, labels = c("obese", "not obes
 levels(yrbssNM2019$qnobese)
 plot(yrbssNM2019$qnobese)
 ```
+Factors below for overweight should be treated with caution. We are using them
+for example purposes, but based on the data we don't know that the labels
+are correct.
 
-We are not going to coerce overweight indicator variable to a factor,
-since on review we can't determine what the factors are.
+```{r overweight_factor}
+
+yrbssNM2019$qnowt <- factor(yrbssNM2019$qnowt, labels = c("overweight", "not overweight"))
+levels(yrbssNM2019$qnowt)
+plot(yrbssNM2019$qnowt)
+```
 
 The labels for the factors levels will now be used in tables and plots.
 
@@ -124,3 +131,62 @@ ggplot(yrbssNM2019, mapping = aes(x = sex, y = bmi)) +
          labs(x = "Sex", y = "Body Mass Index", 
               title = "BMI by Race and Sex")
 ```
+Continue to coerce variables to factors. We won't do all of them, but we can 
+complete the demographic and sexual minority variables.
+
+```{r sexual_minority_factors}
+yrbssNM2019$q66 <- factor(yrbssNM2019$q66, labels = c("heterosexual",
+                                                      "gay or lesbian",
+                                                      "bisexual",
+                                                      "not sure"))
+yrbssNM2019$q65 <- factor(yrbssNM2019$q65, labels = c("never had sexual contact",
+                                                      "females",
+                                                      "males",
+                                                      "females and males"))
+yrbssNM2019$sexid <- factor(yrbssNM2019$sexid, labels = c("heterosexual",
+                                                      "gay or lesbian",
+                                                      "bisexual",
+                                                      "not sure"))
+yrbssNM2019$sexid2 <- factor(yrbssNM2019$sexid2, labels = c("heterosexual",
+                                                      "sexual minority",
+                                                      "unsure"))
+yrbssNM2019$sexpart <- factor(yrbssNM2019$sexpart, labels = c("never had sex",
+                                                      "opposite sex only",
+                                                      "same sex only",
+                                                      "both sexes"))
+yrbssNM2019$sexpart2 <- factor(yrbssNM2019$sexpart2, labels = c("never had sex",
+                                                      "opposite sex only",
+                                                      "same sex only or both sexes"))
+```
+
+Plot the above
+
+```{r sexual_minority_plots}
+plot(yrbssNM2019$q66)
+plot(yrbssNM2019$q65)
+plot(yrbssNM2019$sexid)
+plot(yrbssNM2019$sexid2)
+plot(yrbssNM2019$sexpart)
+plot(yrbssNM2019$sexpart2)
+```
+The dataset used for this demonstration includes the dichotomized versions
+of the remaining questions. 
+
+These variables are set to 1 when the answer is in the response of interest,
+and 2 otherwise. Without knowing what constitutes a response of interest,
+the following results should all again be understood as examples of doing
+something with R and R Markdown, and not as meaningful analyses.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
