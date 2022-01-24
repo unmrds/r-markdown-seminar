@@ -11,14 +11,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load_packages, echo=TRUE, include=TRUE, message=FALSE}
-library(tidyverse)
-library(readxl)
-library(ggplot2)
-library(crosstable)
-```
-
-
 ## Welcome!
 
 Today we will be presenting an introduction to R and RStudio, with a special
@@ -54,27 +46,50 @@ any questions.
 ## R and RStudio
 
 Content for this section is adapted from the University Libraries' Research
-Data Services' Coffee and Code workshop on R and RStudio:
+Data Services Coffee and Code workshop on R and RStudio:
 <https://github.com/unmrds/cc-R-RStudio>.
 
 ## Markdown
 
 Content for this section is adapted from the University Libraries' Research
-Data Services' Coffee and Code workshop on Reproducibility and Communication
+Data Services Coffee and Code workshop on Reproducibility and Communication
 Using Notebooks (Jupyter (python) and R):
 <https://github.com/unmrds/cc-reproducibility-communication>.
 
-## YRBSS
+## About the Data
 
-About the data, what we want to do with this report.
+Our demonstration today uses data about health related behaviors of
+high-school students from the Youth Risk Behavior Surveillance System (YRBSS).
+The data are available in multiple formats from the Centers for Disease Control
+and Prevention: <https://www.cdc.gov/healthyyouth/data/yrbs/index.htm>.
 
-Load one year's worth of data as a standalone example.
+The dataset we're using is the _Combined YRBS High School Dataset_, which
+contains data from every participating high school during each survey year. For
+our purposes, the data have been pre-processed a little from the dataset as
+provided in MS Access format for states beginning with letters N - Z. 
+Specifically, we:
+
+1. Queried the database for NM data for the years 2011, 2013, 2015, 2017, 2019.
+2. Exported each year's data in Excel format.
+
+The data are not included in the GitHub repository for this seminar, mainly
+because of uncertainty regarding access and use limitations on the data.
+
+## Working with the Data in RStudio
+
+
+
+```{r load_packages, echo=TRUE, include=TRUE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(crosstable)
+```
+
+
 
 ```{r read_data, echo=TRUE, include=TRUE, message=FALSE}
 yrbssNM2019 <- read_excel("./data/sadcqn_nm2019.xlsx")
-
-# Too many variables for this to look good in the nb
-# summary(yrbssNM2019)
 ```
 
 Get information about the imported data.
