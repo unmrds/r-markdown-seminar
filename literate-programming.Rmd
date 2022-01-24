@@ -2,7 +2,9 @@
 title: "Literate Programming"
 author: "Jon Wheeler"
 date: "1/19/2022"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -15,6 +17,52 @@ library(readxl)
 library(ggplot2)
 library(crosstable)
 ```
+
+
+## Welcome!
+
+Today we will be presenting an introduction to R and RStudio, with a special
+focus on writing reproducible reports using R Markdown.
+
+This seminar is intended to serve as a high level introduction to these
+applications and concepts. We are planning for longer, more in-depth and
+hands-on workshops in the near future.
+
+This notebook is publicly available from GitHub, at 
+<https://github.com/unmrds/r-markdown-seminar>. The data are described in more
+detail below, but if you would like to run the markdown and R code against
+the data used for this demonstration, the data are available using a link
+that will be provided in the chat.
+
+You are welcome to launch R or RStudio, download the data, and follow along,
+but please note that we may not be able to troubleshoot technical issues 
+during our session today. Please do feel free to email us afterwards with 
+any questions.
+
+### Today's instructors
+
+* Harry Snow, Programmer/Analyst CTSC
+* Jon Wheeler, Data Curation Librarian
+
+### What we will cover
+
+* Overview of R and RStudio
+* Introduction to Markdown
+* Using community developed statistical packages in R
+* Writing parameterized reports
+
+## R and RStudio
+
+Content for this section is adapted from the University Libraries' Research
+Data Services' Coffee and Code workshop on R and RStudio:
+<https://github.com/unmrds/cc-R-RStudio>.
+
+## Markdown
+
+Content for this section is adapted from the University Libraries' Research
+Data Services' Coffee and Code workshop on Reproducibility and Communication
+Using Notebooks (Jupyter (python) and R):
+<https://github.com/unmrds/cc-reproducibility-communication>.
 
 ## YRBSS
 
