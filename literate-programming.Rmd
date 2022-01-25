@@ -399,7 +399,7 @@ descriptive statistics, plots, and models for any of the variables in the
 YRBSS data, as well as for cross tabulation of multiple variables, 
 multinomial models, etc.
 
-Although this notebook was developed using the 2019 data, in order to run
+Alth===ough this notebook was developed using the 2019 data, in order to run
 this same report against any other year's data we would only have to change
 one line of code in the whole report - the value of the `fp` variable above
 that we use to point to the raw data file.
