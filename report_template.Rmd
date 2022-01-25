@@ -2,7 +2,7 @@
 title: "YRBSS example report for `r fp`"
 author: "Jon Wheeler"
 date: "1/25/2022"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}

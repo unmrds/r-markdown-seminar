@@ -10,6 +10,6 @@ yrbssFlist
 
 for (fp in yrbssFlist) {
   rmarkdown::render(
-    'report_template.Rmd', output_file = paste0(fp, '.html')
+    'report_template.Rmd', output_file = paste0(fp, '.pdf')
   )
 }
