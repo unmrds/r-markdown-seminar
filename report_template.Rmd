@@ -178,20 +178,19 @@ seat_belts_age <- yrbssNM %>%
 
 Without including our code in the compiled report, we can nonetheless state
 that the percentage of respondents 18 or older who never or rarely wear a
-seatbelt is `r seat_belts_age$pct[7]`.
+seat belt is `r seat_belts_age$pct[7]`.
 
 We can also still include a plot of the results:
 
 ```{r}
 ggplot(seat_belts_age, aes(x = age, y = pct)) + geom_col(fill = "blue")
 ```
+
 ## Models
 
 Keeping in mind that nothing in this example notebook should be taken as an
-actual analysis, the following model _may_ predict the likelihood that 
+actual analysis, our model _may_ predict the likelihood that 
 an individual will rarely or never wear a seat belt based on their sex.
-
-Let's exclude the model code block from our compiled report.
 
 ```{r, include = FALSE}
 yrbssNM$qn8 <- as.factor(yrbssNM$qn8)
@@ -208,7 +207,3 @@ to avoid interpreting the result, but for the sake of our example
 we will suggest that the odds of a randomly selected male always wearing a
 seat belt are `r sb_odds[2]`. 
 
-A similar process as we have demonstrated here can be used to produce
-descriptive statistics, plots, and models for any of the variables in the
-YRBSS data, as well as for cross tabulation of multiple variables, 
-multinomial models, etc.
