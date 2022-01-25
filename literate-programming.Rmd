@@ -143,6 +143,7 @@ When creating reports, this gives us the flexibility to update data points in
 our text dynamically as opposed to only being able to update tables and 
 figures.
 
+
 ## Incorporating Data and Plots
 
 The data include many categorical variables that have been imported as numeric
@@ -168,6 +169,7 @@ the plot by defining aesthetics based on other variables.
 ggplot(yrbssNM, mapping = aes(x = grade, y = weight)) + 
          geom_point(alpha = 0.05, aes(color = stheight, size = bmi))
 ```
+
 ## Manipulate the Data
 
 From here on we will work through a process of manipulating the data so that we
