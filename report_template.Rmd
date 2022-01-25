@@ -1,0 +1,214 @@
+---
+title: "YRBSS example report for `r fp`"
+author: "Jon Wheeler"
+date: "1/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Example YRBSS Report for `r fp`
+
+```{r load_packages, echo=TRUE, include=FALSE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(crosstable)
+```
+
+This report produces the same statistics and plots as we used for our
+example report, only the output has been generated per file from a list
+of data files.
+
+```{r read_data, echo=TRUE, include=FALSE, message=FALSE}
+yrbssNM <- read_excel(paste0("./data/", fp))
+```
+
+```{r check_problems, include = FALSE}
+# Check the data import for any problems:
+problems(yrbssNM)
+```
+
+```{r sex_factor, echo = FALSE, message = FALSE, include = FALSE}
+# Documentation says A for female, B for male, but we have values of 1 and 2...
+# Assume 1 == female, 2 == male
+
+# Note if we want to see the plot below, we need to set include == TRUE
+yrbssNM$sex <- as.factor(yrbssNM$sex)
+levels(yrbssNM$sex)
+levels(yrbssNM$sex)[1] <- "female"
+levels(yrbssNM$sex)[2] <- "male"
+levels(yrbssNM$sex)
+plot(yrbssNM$sex) # omits NAs
+```
+
+```{r race4_factor, include = FALSE}
+# Same process as above, using a different
+# factoring function to make it a one-liner.
+yrbssNM$race4 <- factor(yrbssNM$race4,
+                            labels = c("White", 
+                                       "Black or African American", 
+                                       "Hispanic/Latino", 
+                                       "All other races"))
+levels(yrbssNM$race4)
+plot(yrbssNM$race4)
+```
+
+```{r race7_factor, include = FALSE}
+
+yrbssNM$race7 <- factor(yrbssNM$race7,
+                            labels = c("American Indian/Alaska Native", 
+                                       "Asian", 
+                                       "Black or African American", 
+                                       "Hispanic/Latino",
+                                       "Native Hawaiian/Other Pacific Islander",
+                                       "White",
+                                       "Multiple Races (Non-Hispanic)"))
+levels(yrbssNM$race7)
+plot(yrbssNM$race7)
+```
+
+```{r obesity_factor, include = FALSE}
+
+yrbssNM$qnobese <- factor(yrbssNM$qnobese, labels = c("obese", 
+                                                              "not obese"))
+levels(yrbssNM$qnobese)
+plot(yrbssNM$qnobese)
+```
+
+
+```{r overweight_factor, include=FALSE}
+# Factors below for overweight should be treated with special caution, even for
+# the purposes of our example. Based on a quick inspection of the the data,
+# we don't know that the labels are correct.
+yrbssNM$qnowt <- factor(yrbssNM$qnowt, labels = c("overweight", 
+                                                          "not overweight"))
+levels(yrbssNM$qnowt)
+plot(yrbssNM$qnowt)
+```
+
+## Descriptive Statistics
+
+Proportion of female and male respondents by grade:
+
+```{r prop_table_mf_factors}
+# note that sum of all values is 1
+prop.table(table(yrbssNM$grade, yrbssNM$sex))
+```
+
+Plot of BMI by sex, with additional information about race and obesity:
+
+```{r plot_race7_bmi_sex}
+ggplot(yrbssNM, mapping = aes(x = sex, y = bmi)) + 
+         geom_boxplot(aes(fill = qnobese)) + 
+         facet_wrap(~ race7) +
+         labs(x = "Sex", y = "Body Mass Index", 
+              title = "BMI by Race and Sex")
+```
+
+## Reporting Statistics on Risk Behavior
+
+The dataset used for this demonstration includes the dichotomized versions
+of the remaining questions. 
+
+These variables are set to 1 when the answer is in the response of interest,
+and 2 otherwise. More detail is provided in the dataset documentation. 
+
+Variables labeled QN8 - QN11 address driving behaviors. 
+For the remainder of this demo we will focus on those variables to derive
+the percentage of students who engage in specific behaviors such as not 
+wearing a seat belt (QN8).
+
+**QN8:** - _How often do you wear a seat belt when riding in a car
+driven by someone else?_ 
+
+Behaviors of interest, per documentation, are responses of "Never" or "Rarely" 
+to this question. We can arrive at the percentage of students who engaged in
+behaviors of interest:
+
+```{r seat_belt}
+# Using dplyr
+seat_belts <- yrbssNM %>% 
+  select(qn8) %>% 
+  filter(!is.na(qn8)) %>% 
+  summarise(pct = sum(qn8 == 1)/n())
+
+seat_belts
+```
+
+We can break responses down by different demographics. For example, we can
+get the distribution of respondent behaviors by sex:
+
+```{r}
+seat_belts_mf <- yrbssNM %>% 
+  select(sex, qn8) %>% 
+  filter(!is.na(qn8), !is.na(sex)) %>% 
+  group_by(sex) %>% 
+  summarise(c = sum(!is.na(qn8)), 
+            c1 = sum(qn8 == 1),
+            c2 = sum(qn8 == 2),
+            pct = sum(qn8 == 1)/n())
+
+# Note the different ways the below are output between running the code
+# versus compiling the document:
+seat_belts_mf
+ggplot(seat_belts_mf, aes(x = sex, y = pct)) + geom_col()
+```
+
+### Tip: Reporting statistics inline 
+
+Returning to our examples of using inline code in R Markdown, depending on our
+objectives or audience for a report we can exclude the code and calculations 
+from the compiled report and add statistics inline. We will reproduce our
+example above to break down seat belt behaviors by age. 
+
+```{r, include = FALSE}
+seat_belts_age <- yrbssNM %>% 
+  select(age, qn8) %>% 
+  filter(!is.na(qn8), !is.na(age)) %>% 
+  group_by(age) %>% 
+  summarise(c = sum(!is.na(qn8)), 
+            c1 = sum(qn8 == 1),
+            c2 = sum(qn8 == 2),
+            pct = sum(qn8 == 1)/n())
+```
+
+Without including our code in the compiled report, we can nonetheless state
+that the percentage of respondents 18 or older who never or rarely wear a
+seatbelt is `r seat_belts_age$pct[7]`.
+
+We can also still include a plot of the results:
+
+```{r}
+ggplot(seat_belts_age, aes(x = age, y = pct)) + geom_col(fill = "blue")
+```
+## Models
+
+Keeping in mind that nothing in this example notebook should be taken as an
+actual analysis, the following model _may_ predict the likelihood that 
+an individual will rarely or never wear a seat belt based on their sex.
+
+Let's exclude the model code block from our compiled report.
+
+```{r, include = FALSE}
+yrbssNM$qn8 <- as.factor(yrbssNM$qn8)
+yrbssNM$qn11 <- as.factor(yrbssNM$qn11)
+sbm <- glm(qn8 ~ sex, data = yrbssNM, family = "binomial")
+summary(sbm)
+sb_odds <- round(cbind(exp(coef(sbm)),
+            exp(confint(sbm))), 3)
+sb_odds
+```
+
+As noted we can still use the model results in our report. We are going
+to avoid interpreting the result, but for the sake of our example
+we will suggest that the odds of a randomly selected male always wearing a
+seat belt are `r sb_odds[2]`. 
+
+A similar process as we have demonstrated here can be used to produce
+descriptive statistics, plots, and models for any of the variables in the
+YRBSS data, as well as for cross tabulation of multiple variables, 
+multinomial models, etc.

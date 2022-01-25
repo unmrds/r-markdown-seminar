@@ -75,84 +75,135 @@ Specifically, we:
 The data are not included in the GitHub repository for this seminar, mainly
 because of uncertainty regarding access and use limitations on the data.
 
+### Important!
+
+The remainder of this notebook should not be taken as an actual
+analysis of the YRBSS data, but only as a demonstration of the capabilities
+of R, RStudio, and R Markdown for building efficiency into analytic and 
+reporting workflows.
+
 ## Working with the Data in RStudio
 
+Let's start working with the data to produce an example R Markdown report.
 
+The process below is divided into two stages, both of which were included in
+our model of a typical R workflow. First, we often need to manipulate, clean,
+or otherwise "tidy" data prior to analyzing it. Second, we analyze the data 
+and present our findings.
 
-```{r load_packages, echo=TRUE, include=TRUE, message=FALSE}
+One way to approach this would be to create a separate script for the data
+manipulation, and the only include the analysis and visualization steps in our
+report. However, R Markdown allows us to specify which code blocks and output
+are included in the compiled version of the notebook. This gives us the option
+to develop our workflow within a single document.
+
+For example, by setting the "include" argument below to "FALSE," we are able to
+exclude the following code block from the compiled report:
+
+```{r load_packages, echo=TRUE, include=FALSE, message=FALSE}
 library(tidyverse)
 library(readxl)
 library(ggplot2)
 library(crosstable)
 ```
 
+We will take this approach for the rest of this example, leaving out code blocks
+that are not part of the analysis and visualization.
 
+Next we read a data file. Note that this step can be parameterized to operate
+on a list of files.
 
-```{r read_data, echo=TRUE, include=TRUE, message=FALSE}
-yrbssNM2019 <- read_excel("./data/sadcqn_nm2019.xlsx")
+```{r read_data, echo=TRUE, include=FALSE, message=FALSE}
+fp <- "./data/sadcqn_nm2019.xlsx"
+yrbssNM <- read_excel(fp)
 ```
 
-Get information about the imported data.
-
-```{r}
-# spec(yrbssNM2019) # doesn't work on Excel
-problems(yrbssNM2019)
+```{r check_problems, include = FALSE}
+# Check the data import for any problems:
+problems(yrbssNM)
 ```
 
-## Including Plots
+### Tip: adding inline R code
 
-You can also embed plots, for example:
+Since we excluded the above code block from the compiled report, we can 
+use inline R code to document the name of the file we just read: **`r fp`**.
 
-```{r yrbssNMplot, echo=FALSE}
-plot(x = yrbssNM2019$bmi, y = yrbssNM2019$age)
-```
+Note that we are able to use Markdown syntax to print the file name in bold
+type. We can also use inline code to print the value of specific cells from a
+table:
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The value of the first cell of the _weight_ column is:
+`r yrbssNM$weight[1]`.
 
-The data include many categorical variables - if we want to run certain 
-models we will have to coerce variable data types. But for now we can draw more informative plots and interrogate the data as-is.
+Finally, we can print the output of an operation:
+
+The maximum value of the weight variable is: `r max(yrbssNM$weight)``
+
+When creating reports, this gives us the flexibility to update data points in
+our text dynamically as opposed to only being able to update tables and 
+figures.
+
+## Incorporating Data and Plots
+
+The data include many categorical variables that have been imported as numeric
+and character data types. If we want to perform certain operations or run 
+models, we will have to change the data type of these variables to factors. But 
+for now we can still interrogate the data as-is and draw a few plots.
+
+Below is a table showing the proportion of survey respondents by sex and grade.
+Note that the variables are not labeled - we will add labels below.
 
 ```{r proportion_table}
 # note that sum of all values is 1
-prop.table(table(yrbssNM2019$grade, yrbssNM2019$sex))
+prop.table(table(yrbssNM$grade, yrbssNM$sex))
 ```
 
-Draw a plot. Use additional variables for aesthetics. Adds more information
-to the plot. Alpha value helps us to see concentrations of data points.
+Below is a plot of respondent weights (in kilograms) by grade. Again, the
+variables aren't labeled in a way that makes this easy to read but we can
+demonstrate an immediate capability of R over Excel. In addition to plotting
+variables along the X and Y axes, we are able to include more information in 
+the plot by defining aesthetics based on other variables.
 
 ```{r plot weight/grade}
-ggplot(yrbssNM2019, mapping = aes(x = grade, y = stweight)) + 
+ggplot(yrbssNM, mapping = aes(x = grade, y = weight)) + 
          geom_point(alpha = 0.05, aes(color = stheight, size = bmi))
 ```
-Manipulate the data - we want to be able to produce some summary statistics similar
-to the YRBSS web page.
+## Manipulate the Data
 
-Coerce some variables into factors.
+From here on we will work through a process of manipulating the data so that we
+can output a report with summary statistics similar to the YRBSS web page.
 
-```{r sex_factor}
+First we will change some variable data types into factors. Note that we
+are excluding all of the following code blocks from our compiled report.
 
+```{r sex_factor, echo = FALSE, message = FALSE, include = FALSE}
 # Documentation says A for female, B for male, but we have values of 1 and 2...
-# assume 1 == female, 2 == male
-yrbssNM2019$sex <- as.factor(yrbssNM2019$sex)
-levels(yrbssNM2019$sex)
-levels(yrbssNM2019$sex)[1] <- "female"
-levels(yrbssNM2019$sex)[2] <- "male"
-levels(yrbssNM2019$sex)
-plot(yrbssNM2019$sex) # omits NAs
-```
-```{r race4_factor}
+# Assume 1 == female, 2 == male
 
-yrbssNM2019$race4 <- factor(yrbssNM2019$race4,
+# Note if we want to see the plot below, we need to set include == TRUE
+yrbssNM$sex <- as.factor(yrbssNM$sex)
+levels(yrbssNM$sex)
+levels(yrbssNM$sex)[1] <- "female"
+levels(yrbssNM$sex)[2] <- "male"
+levels(yrbssNM$sex)
+plot(yrbssNM$sex) # omits NAs
+```
+
+```{r race4_factor, include = FALSE}
+# Same process as above, using a different
+# factoring function to make it a one-liner.
+yrbssNM$race4 <- factor(yrbssNM$race4,
                             labels = c("White", 
                                        "Black or African American", 
                                        "Hispanic/Latino", 
                                        "All other races"))
-levels(yrbssNM2019$race4)
-plot(yrbssNM2019$race4)
+levels(yrbssNM$race4)
+plot(yrbssNM$race4)
 ```
-```{r race7_factor}
 
-yrbssNM2019$race7 <- factor(yrbssNM2019$race7,
+```{r race7_factor, include = FALSE}
+
+yrbssNM$race7 <- factor(yrbssNM$race7,
                             labels = c("American Indian/Alaska Native", 
                                        "Asian", 
                                        "Black or African American", 
@@ -160,90 +211,103 @@ yrbssNM2019$race7 <- factor(yrbssNM2019$race7,
                                        "Native Hawaiian/Other Pacific Islander",
                                        "White",
                                        "Multiple Races (Non-Hispanic)"))
-levels(yrbssNM2019$race7)
-plot(yrbssNM2019$race7)
-```
-```{r obesity_factor}
-
-yrbssNM2019$qnobese <- factor(yrbssNM2019$qnobese, labels = c("obese", "not obese"))
-levels(yrbssNM2019$qnobese)
-plot(yrbssNM2019$qnobese)
-```
-Factors below for overweight should be treated with caution. We are using them
-for example purposes, but based on the data we don't know that the labels
-are correct.
-
-```{r overweight_factor}
-
-yrbssNM2019$qnowt <- factor(yrbssNM2019$qnowt, labels = c("overweight", "not overweight"))
-levels(yrbssNM2019$qnowt)
-plot(yrbssNM2019$qnowt)
+levels(yrbssNM$race7)
+plot(yrbssNM$race7)
 ```
 
-The labels for the factors levels will now be used in tables and plots.
+```{r obesity_factor, include = FALSE}
+
+yrbssNM$qnobese <- factor(yrbssNM$qnobese, labels = c("obese", 
+                                                              "not obese"))
+levels(yrbssNM$qnobese)
+plot(yrbssNM$qnobese)
+```
+
+
+```{r overweight_factor, include=FALSE}
+# Factors below for overweight should be treated with special caution, even for
+# the purposes of our example. Based on a quick inspection of the the data,
+# we don't know that the labels are correct.
+yrbssNM$qnowt <- factor(yrbssNM$qnowt, labels = c("overweight", 
+                                                          "not overweight"))
+levels(yrbssNM$qnowt)
+plot(yrbssNM$qnowt)
+```
+
+The labels for the factors levels will now be used in tables and plots. If we
+redo our proportion table above, we see that values for sex have been
+categorized as "female" and "male."
 
 ```{r prop_table_mf_factors}
 # note that sum of all values is 1
-prop.table(table(yrbssNM2019$grade, yrbssNM2019$sex))
+prop.table(table(yrbssNM$grade, yrbssNM$sex))
 ```
+There are other ways to label parts of a plot without having to change the
+underlying data types to factors, but note that the labels for our factors
+are also used by default in plots.
 
-```{r plot race7/bmi/sex}
-ggplot(yrbssNM2019, mapping = aes(x = sex, y = bmi)) + 
+The plot below could benefit from some reformatting or resizing, but here
+again we see the capabilities of R over Excel when it comes to plotting.
+
+```{r plot_race7_bmi_sex}
+ggplot(yrbssNM, mapping = aes(x = sex, y = bmi)) + 
          geom_boxplot(aes(fill = qnobese)) + 
          facet_wrap(~ race7) +
          labs(x = "Sex", y = "Body Mass Index", 
               title = "BMI by Race and Sex")
 ```
-Continue to coerce variables to factors. We won't do all of them, but we can 
-complete the demographic and sexual minority variables.
 
-```{r sexual_minority_factors}
-yrbssNM2019$q66 <- factor(yrbssNM2019$q66, labels = c("heterosexual",
+```{r sexual_minority_factors, include = FALSE}
+# Change sexual minoroty variables to factors.
+yrbssNM$q66 <- factor(yrbssNM$q66, labels = c("heterosexual",
                                                       "gay or lesbian",
                                                       "bisexual",
                                                       "not sure"))
-yrbssNM2019$q65 <- factor(yrbssNM2019$q65, labels = c("never had sexual contact",
+yrbssNM$q65 <- factor(yrbssNM$q65, labels = c("never had sexual contact",
                                                       "females",
                                                       "males",
                                                       "females and males"))
-yrbssNM2019$sexid <- factor(yrbssNM2019$sexid, labels = c("heterosexual",
+yrbssNM$sexid <- factor(yrbssNM$sexid, labels = c("heterosexual",
                                                       "gay or lesbian",
                                                       "bisexual",
                                                       "not sure"))
-yrbssNM2019$sexid2 <- factor(yrbssNM2019$sexid2, labels = c("heterosexual",
+yrbssNM$sexid2 <- factor(yrbssNM$sexid2, labels = c("heterosexual",
                                                       "sexual minority",
                                                       "unsure"))
-yrbssNM2019$sexpart <- factor(yrbssNM2019$sexpart, labels = c("never had sex",
+yrbssNM$sexpart <- factor(yrbssNM$sexpart, labels = c("never had sex",
                                                       "opposite sex only",
                                                       "same sex only",
                                                       "both sexes"))
-yrbssNM2019$sexpart2 <- factor(yrbssNM2019$sexpart2, labels = c("never had sex",
+yrbssNM$sexpart2 <- factor(yrbssNM$sexpart2, labels = c("never had sex",
                                                       "opposite sex only",
                                                       "same sex only or both sexes"))
 ```
 
-Plot the above
 
-```{r sexual_minority_plots}
-plot(yrbssNM2019$q66)
-plot(yrbssNM2019$q65)
-plot(yrbssNM2019$sexid)
-plot(yrbssNM2019$sexid2)
-plot(yrbssNM2019$sexpart)
-plot(yrbssNM2019$sexpart2)
+```{r sexual_minority_plots, include = FALSE}
+plot(yrbssNM$q66)
+plot(yrbssNM$q65)
+plot(yrbssNM$sexid)
+plot(yrbssNM$sexid2)
+plot(yrbssNM$sexpart)
+plot(yrbssNM$sexpart2)
 ```
+
+## Reporting Statistics on Risk Behavior
+
 The dataset used for this demonstration includes the dichotomized versions
 of the remaining questions. 
 
 These variables are set to 1 when the answer is in the response of interest,
 and 2 otherwise. More detail is provided in the dataset documentation. 
 
-QN8 - QN11 address driving behaviors. For the remainder of this demo we
-will focus on those variables to derive the percentage of students who
-engage in specific behaviors such as not wearing a seat belt (QN8).
+Variables labeled QN8 - QN11 address driving behaviors. 
+For the remainder of this demo we will focus on those variables to derive
+the percentage of students who engage in specific behaviors such as not 
+wearing a seat belt (QN8).
 
-QN8 - How often do you wear a seat belt when riding in a car driven by someone
-else. 
+**QN8:** - _How often do you wear a seat belt when riding in a car
+driven by someone else?_ 
 
 Behaviors of interest, per documentation, are responses of "Never" or "Rarely" 
 to this question. We can arrive at the percentage of students who engaged in
@@ -251,17 +315,19 @@ behaviors of interest:
 
 ```{r seat_belt}
 # Using dplyr
-seat_belts <- yrbssNM2019 %>% 
+seat_belts <- yrbssNM %>% 
   select(qn8) %>% 
   filter(!is.na(qn8)) %>% 
   summarise(pct = sum(qn8 == 1)/n())
 
 seat_belts
 ```
-We can break it down by different demographics.
+
+We can break responses down by different demographics. For example, we can
+get the distribution of respondent behaviors by sex:
 
 ```{r}
-seat_belts_mf <- yrbssNM2019 %>% 
+seat_belts_mf <- yrbssNM %>% 
   select(sex, qn8) %>% 
   filter(!is.na(qn8), !is.na(sex)) %>% 
   group_by(sex) %>% 
@@ -270,27 +336,73 @@ seat_belts_mf <- yrbssNM2019 %>%
             c2 = sum(qn8 == 2),
             pct = sum(qn8 == 1)/n())
 
+# Note the different ways the below are output between running the code
+# versus compiling the document:
 seat_belts_mf
 ggplot(seat_belts_mf, aes(x = sex, y = pct)) + geom_col()
 ```
+### Tip: Reporting statistics inline 
 
-Try a model. Given the nature of the data, I am not sure what we are
-predicting. Is it the likelihood that an individual will
-engage in behavior of interest based on sex?
+Returning to our examples of using inline code in R Markdown, depending on our
+objectives or audience for a report we can exclude the code and calculations 
+from the compiled report and add statistics inline. We will reproduce our
+example above to break down seat belt behaviors by age. 
 
-```{r}
-yrbssNM2019$qn8 <- as.factor(yrbssNM2019$qn8)
-yrbssNM2019$qn11 <- as.factor(yrbssNM2019$qn11)
-sbm <- glm(qn8 ~ sex, data = yrbssNM2019, family = "binomial")
-summary(sbm)
-round(cbind(exp(coef(sbm)),
-            exp(confint(sbm))), 3)
+```{r, include = FALSE}
+seat_belts_age <- yrbssNM %>% 
+  select(age, qn8) %>% 
+  filter(!is.na(qn8), !is.na(age)) %>% 
+  group_by(age) %>% 
+  summarise(c = sum(!is.na(qn8)), 
+            c1 = sum(qn8 == 1),
+            c2 = sum(qn8 == 2),
+            pct = sum(qn8 == 1)/n())
 ```
 
-Do we understand this as males are ~34% less likely to wear a seat belt?
+Without including our code in the compiled report, we can nonetheless state
+that the percentage of respondents 18 or older who never or rarely wear a
+seatbelt is `r seat_belts_age$pct[7]`.
 
+We can also still include a plot of the results:
 
+```{r}
+ggplot(seat_belts_age, aes(x = age, y = pct)) + geom_col(fill = "blue")
+```
+## Models
 
+Results of models can also be included in a report. This may be one area where
+reporting coefficients using inline code could simplify the presentation.
+
+Keeping in mind that nothing in this example notebook should be taken as an
+actual analysis, the following model _may_ predict the likelihood that 
+an individual will rarely or never wear a seat belt based on their sex.
+
+Let's exclude the model code block from our compiled report.
+
+```{r, include = FALSE}
+yrbssNM$qn8 <- as.factor(yrbssNM$qn8)
+yrbssNM$qn11 <- as.factor(yrbssNM$qn11)
+sbm <- glm(qn8 ~ sex, data = yrbssNM, family = "binomial")
+summary(sbm)
+sb_odds <- round(cbind(exp(coef(sbm)),
+            exp(confint(sbm))), 3)
+sb_odds
+```
+
+As noted we can still use the model results in our report. We are going
+to avoid interpreting the result, but for the sake of our example
+we will suggest that the odds of a randomly selected male always wearing a
+seat belt are `r sb_odds[2]`. 
+
+A similar process as we have demonstrated here can be used to produce
+descriptive statistics, plots, and models for any of the variables in the
+YRBSS data, as well as for cross tabulation of multiple variables, 
+multinomial models, etc.
+
+Although this notebook was developed using the 2019 data, in order to run
+this same report against any other year's data we would only have to change
+one line of code in the whole report - the value of the `fp` variable above
+that we use to point to the raw data file.
 
 
 
