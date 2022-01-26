@@ -359,11 +359,15 @@ seat_belts_age <- yrbssNM %>%
             c1 = sum(qn8 == 1),
             c2 = sum(qn8 == 2),
             pct = sum(qn8 == 1)/n())
+x = seat_belts_age$pct[7]
+xfmt <- paste(toString(format(round(x*100,2),nsmall=2)), 
+              "%", sep="",
+              collapse=NULL)
 ```
 
 Without including our code in the compiled report, we can nonetheless state
 that the percentage of respondents 18 or older who never or rarely wear a
-seatbelt is `r seat_belts_age$pct[7]`.
+seatbelt is `r xfmt`.
 
 We can also still include a plot of the results:
 
