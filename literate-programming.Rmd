@@ -343,6 +343,7 @@ seat_belts_mf <- yrbssNM %>%
 seat_belts_mf
 ggplot(seat_belts_mf, aes(x = sex, y = pct)) + geom_col()
 ```
+
 ### Tip: Reporting statistics inline 
 
 Returning to our examples of using inline code in R Markdown, depending on our
@@ -374,6 +375,7 @@ We can also still include a plot of the results:
 ```{r}
 ggplot(seat_belts_age, aes(x = age, y = pct)) + geom_col(fill = "blue")
 ```
+
 ## Models
 
 Results of models can also be included in a report. This may be one area where
@@ -383,9 +385,10 @@ Keeping in mind that nothing in this example notebook should be taken as an
 actual analysis, the following model _may_ predict the likelihood that 
 an individual will rarely or never wear a seat belt based on their sex.
 
-Let's exclude the model code block from our compiled report.
+For now we will include the model code and summary output in our compiled
+document, but we could exclude it as desired.
 
-```{r, include = FALSE}
+```{r}
 yrbssNM$qn8 <- as.factor(yrbssNM$qn8)
 yrbssNM$qn11 <- as.factor(yrbssNM$qn11)
 sbm <- glm(qn8 ~ sex, data = yrbssNM, family = "binomial")
@@ -395,25 +398,37 @@ sb_odds <- round(cbind(exp(coef(sbm)),
 sb_odds
 ```
 
-As noted we can still use the model results in our report. We are going
-to avoid interpreting the result, but for the sake of our example
-we will suggest that the odds of a randomly selected male always wearing a
+As noted we can exclude the model code if we prefer but still use the
+results in our report using inline R code. We are going to avoid 
+interpreting the result,  but for the sake of our example we will 
+suggest that the odds of a randomly selected male always wearing a 
 seat belt are `r sb_odds[2]`. 
+
+## Final Thoughts
 
 A similar process as we have demonstrated here can be used to produce
 descriptive statistics, plots, and models for any of the variables in the
 YRBSS data, as well as for cross tabulation of multiple variables, 
 multinomial models, etc.
 
-Alth===ough this notebook was developed using the 2019 data, in order to run
+Although this notebook was developed using the 2019 data, in order to run
 this same report against any other year's data we would only have to change
 one line of code in the whole report - the value of the `fp` variable above
 that we use to point to the raw data file.
 
+## What Next?
+
+For more information and upcoming workshop opportunities:
+
+* Calendar of UNM RDS Coffee and Code workshops: <https://libcal.unm.edu/calendar/coffee-code>
+* Upcoming Software Carpentry workshops: <https://software-carpentry.org/>
+* Upcoming Data Carpentry workshops: <https://datacarpentry.org/>
 
 
+## References
 
-
-
+>1. Centers for Disease Control and Prevention. Combined Youth Risk Behavior Survey Data. Available at: www.cdc.gov/yrbs. Accessed on 2022-01-19.
+>2. Xie, Yihui, Christophe Dervieux, Emily Riederer. R Markdown Cookbook. 
+Available at: https://bookdown.org/yihui/rmarkdown-cookbook/. Accessed 2022-01-26. 
 
 
